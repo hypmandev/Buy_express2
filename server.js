@@ -18,6 +18,35 @@ app.use(express.json());
 app.use(cors())
 app.use(morgan('dev'))
 
+
+const swaggerJsdoc = require("swagger-jsdoc");
+const swagger_UI = require("swagger-ui-express")
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'BASE_URL: https://buy-express2.onrender.com',
+      version: '1.0.0',
+    },
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: "http",
+          scheme: "bearer",
+           bearerFormat: "JWT"
+        }
+      }
+    }, 
+    security: [{ BearerAuth: [] }]
+  },
+  apis: ["./routes/*.js"] // Ensure this points to the correct path
+};
+
+const openapiSpecification = swaggerJsdoc(options);
+app.use("/documentation", swagger_UI.serve, swagger_UI.setup(openapiSpecification))
+
+
 app.use('/api/v1', userRoute)
 app.use('/api/v1', categoryRouter)
 app.use('/api/v1', productRouter)
